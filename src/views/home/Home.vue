@@ -34,6 +34,7 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from "components/common/backTop/BackTop"
 
 import {getHomeMultidata,getHomeGoods} from 'network/home';
+import {debounce} from "common/utilis"
 
 export default {
    name:'Home',
@@ -68,24 +69,24 @@ export default {
    created() {
      //1. 请求多个数据
      this.getHomeMultidata();
+     
+     //2. 请求商品数据
      this.getHomeGoods('pop');
      this.getHomeGoods('new')
-     this.getHomeGoods('sell')
+     this.getHomeGoods('sell') 
+
+    
    },//created
+  
+   mounted() {
+    //3. 监听item中图片加载完成
+    const refresh = debounce(this.$refs.scroll.refresh,200)
+
+    this.$bus.$on("itemImgLoad",()=>{
+      refresh()   
+    })
+  },
    methods: {
-   backClick(){
-    this.$refs.scroll.scrollTo(0,0,500)
-   },
-
-   scrollClick(position){
-    //  console.log(position);
-    position.y<-1000 ? this.isShowBackTop = true : this.isShowBackTop = false;
-   },
-
-   loadMore() {
-    //  console.log('上拉加载更多');
-    this.getHomeGoods(this.currentType)
-   },
      /*
      * 事件监听相关方法
      */
@@ -102,7 +103,19 @@ export default {
           break;
       };
     },
+    backClick(){
+      this.$refs.scroll.scrollTo(0,0,500)
+   },
 
+    scrollClick(position){
+    //  console.log(position);
+      position.y<-1000 ? this.isShowBackTop = true : this.isShowBackTop = false;
+   },
+
+    loadMore() {
+    //  console.log('上拉加载更多');
+      this.getHomeGoods(this.currentType)
+   },
      /*
      * 网络请求相关方法
      */ 

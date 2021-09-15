@@ -45,18 +45,27 @@ export default {
       })
 
       //3. 监听上拉时间
+      if (this.probeType === 2 || this.probeType === 3 )
+      {
       this.scroll.on('pullingUp',()=>{
         // console.log('上拉加载更多');
         this.$emit('pullingUp');
       })
+      }
+      // this.scroll.refresh()
+      // console.log(this.scroll);
   },
   methods: {
     scrollTo(x,y,time){
-      return this.scroll.scrollTo(x,y,time)
+      this.scroll && this.scroll.scrollTo(x,y,time)
     },
 
     finishPullUp(){
-      this.scroll.finishPullUp();
+      this.scroll && this.scroll.finishPullUp();
+    },
+
+    refresh(){
+      this.scroll && this.scroll.refresh()
     }
   },
 }
