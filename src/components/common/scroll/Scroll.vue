@@ -56,17 +56,21 @@ export default {
       // console.log(this.scroll);
   },
   methods: {
-    scrollTo(x,y,time){
-      this.scroll && this.scroll.scrollTo(x,y,time)
+    scrollTo(x,y,time=300) {
+      return this.scroll && this.scroll.scrollTo(x,y,time);
     },
 
-    finishPullUp(){
-      this.scroll && this.scroll.finishPullUp();
+    finishPullUp() {
+      return this.scroll && this.scroll.finishPullUp();
     },
 
-    refresh(){
-      this.scroll && this.scroll.refresh()
-    }
+    refresh() {
+      return this.scroll && this.scroll.refresh();
+    },
+
+    getScrollY() {
+      return this.scroll ? this.scroll.y : 0;
+    }/*路由之间来回切换时记录位置在哪*/
   },
 }
 </script>
