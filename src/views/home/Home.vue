@@ -48,7 +48,8 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from "components/common/backTop/BackTop"
 
 import {getHomeMultidata,getHomeGoods} from 'network/home';
-import {debounce} from "common/utilis"
+import {debounce} from "common/utils"
+import {itemListenerMixin} from "common/mixin"
 
 export default {
    name:'Home',
@@ -62,6 +63,7 @@ export default {
      Scroll,
      BackTop,
    },
+   mixins:[itemListenerMixin],
    data() {
      return {
        banners:[],
@@ -92,6 +94,9 @@ export default {
    deactivated() {
      this.saveY = this.$refs.scroll.getScrollY();
      this.$refs.scroll.refresh();
+
+     //取消全局事件监听
+     this.$bus.$off('itemImgLoad',this.homeItemListener)
    },
 
    created() {
@@ -110,11 +115,12 @@ export default {
   
    mounted() {
     //3. 监听item中图片加载完成
-    const refresh = debounce(this.$refs.scroll.refresh,200)
+    // const refresh = debounce(this.$refs.scroll.refresh,200)
 
-    this.$bus.$on("itemImgLoad",()=>{
-      refresh()   
-    })
+    // this.homeItemListener = ()=>{
+    //   refresh()   
+    // }
+    // this.$bus.$on("itemImgLoad",this.homeItemListener)
     //2. 获取tabControld offsetTop
     // 所有的组件都有一个属性$el: 用于获取组件中的元素
     //  this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;

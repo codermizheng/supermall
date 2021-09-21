@@ -9,6 +9,12 @@ export function getDetail(iid) {
   });
 }
 
+export function getRecommend() {
+  return request({
+    url: "/recommend"
+  });
+}
+
 export class Goods {
   //构造函数
   //constructor: 构造器
