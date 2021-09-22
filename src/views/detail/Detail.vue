@@ -1,7 +1,7 @@
 <template>
   <div id="detail">
-      <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-      <scroll class="content" ref="scroll">
+      <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
+      <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll" :pull-up-load="true">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
@@ -10,6 +10,8 @@
       <detail-comment-info :comment-info="commentInfo" ref="comment"/>
       <goods-list :goods="recommends" ref="recommend"/>
       </scroll> 
+      <detail-bottom-bar></detail-bottom-bar>
+       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -21,9 +23,11 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo.vue'
 import DetailParamInfo from "./childComps/DetailParamInfo.vue"
 import DetailCommentInfo from './childComps/DetailCommentInfo.vue'
+import DetailBottomBar from "./childComps/DetailBottomBar.vue"
 
 import Scroll from 'components/common/scroll/Scroll';
 import GoodsList from "components/content/goods/GoodsList"
+import BackTop from "components/common/backTop/BackTop"
 
 import {getDetail,Goods,Shop, GoodsParam,getRecommend} from "network/detail"
 import {debounce} from 'common/utils.js'
@@ -41,6 +45,8 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     GoodsList,
+    DetailBottomBar,
+    BackTop,
   },
   mixins: [itemListenerMixin],
   data() {
@@ -54,7 +60,11 @@ export default {
           commentInfo:{},
           recommends:[],
           themeTopYts:[],
-          getThemeTopY:null,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+          getThemeTopY:null,
+          currentIndex: null,
+          isShowBackTop: false,
+          tabOffsetTop: 0,
+          isTabFixed:false,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
       }
   },
 
@@ -65,7 +75,23 @@ export default {
       },
       titleClick(index) {
         this.$refs.scroll.scrollTo(0,-this.themeTopYts[index],100)
-      }
+      },
+      contentScroll(position) {
+       const positionY = -position.y
+       let length = this.themeTopYts.length
+       for (let i=0;i < length;i++) {
+         if (this.currentIndex !== i && ((i < length-1 && positionY >= this.themeTopYts[i] && positionY < this.themeTopYts[i+1]) || (i===length - 1 && positionY > this.themeTopYts[i]))) {
+           this.currentIndex = i;
+           this.$refs.nav.currentIndex = this.currentIndex;
+         }
+       }
+       //是否回到顶部
+       position.y<-1000 ? this.isShowBackTop = true : this.isShowBackTop = false;
+       this.isTabFixed = (-position.y) > this.tabOffsetTop;
+      },
+      backClick(){
+       this.$refs.scroll.scrollTo(0,0,500)
+      },
   },
 
   created() {
@@ -132,7 +158,10 @@ export default {
    height: 100vh;
  }
  .content {
-   height: calc(100% - 44px);
+   /* height: calc(100% - 44px); */
+   position: fixed;
+   top: 44px;
+   bottom: 58px;
  }
  .detail-nav{
    position: relative;
