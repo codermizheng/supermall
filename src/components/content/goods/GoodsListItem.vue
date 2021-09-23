@@ -50,6 +50,7 @@ export default {
   .goods-item img {
     width: 100%;
     border-radius: 5px;
+    height: 267.25px;
   }
 
   .goods-info {

@@ -10,8 +10,8 @@
       <detail-comment-info :comment-info="commentInfo" ref="comment"/>
       <goods-list :goods="recommends" ref="recommend"/>
       </scroll> 
-      <detail-bottom-bar></detail-bottom-bar>
-       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
+      <detail-bottom-bar @addCart='addToCart'/>
+      <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
 
@@ -92,6 +92,19 @@ export default {
       backClick(){
        this.$refs.scroll.scrollTo(0,0,500)
       },
+      addToCart(){
+       //1. 获取购物车需要展示的信息
+       const product = {};
+       product.image = this.topImages[0];
+       product.title = this.goods.title;
+       product.desc = this.goods.desc;
+       product.price = this.goods.realPrice;
+       product.iid = this.iid;
+       
+       //2. 将商品添加到购物车里
+      //  this.$store.commit('addCart',product)
+      this.$store.dispatch('addCart', product)
+      },
   },
 
   created() {
@@ -100,7 +113,7 @@ export default {
 
     //根据iid请求详情数据  
     getDetail(this.iid).then(res=>{
-      // console.log(res);
+      console.log(res);
       //1. 获取顶部的图片轮播数据
       const data = res.data.result;
       this.topImages = data.itemInfo.topImages;
@@ -130,9 +143,9 @@ export default {
       this.getThemeTopY = debounce(()=>{
         this.themeTopYts = [];
         this.themeTopYts.push(0);
-        this.themeTopYts.push(this.$refs.params.$el.offsetTop-44);
-        this.themeTopYts.push(this.$refs.comment.$el.offsetTop-44);
-        this.themeTopYts.push(this.$refs.recommend.$el.offsetTop-44)
+        this.themeTopYts.push(this.$refs.params.$el.offsetTop);
+        this.themeTopYts.push(this.$refs.comment.$el.offsetTop);
+        this.themeTopYts.push(this.$refs.recommend.$el.offsetTop)
         // console.log(this.themeTopYts);
       },100)
   },
