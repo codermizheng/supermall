@@ -33,6 +33,8 @@ import {getDetail,Goods,Shop, GoodsParam,getRecommend} from "network/detail"
 import {debounce} from 'common/utils.js'
 import {itemListenerMixin} from "common/mixin"
 
+import {mapActions} from 'vuex';
+
 export default {
   name:"Detail",
   components:{
@@ -69,6 +71,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['addCart']),
       imageLoad(){
         this.$refs.scroll.refresh();
         this.getThemeTopY()
@@ -103,7 +106,9 @@ export default {
        
        //2. 将商品添加到购物车里
       //  this.$store.commit('addCart',product)
-      this.$store.dispatch('addCart', product)
+      this.$store.dispatch('addCart', product).then(res => {
+        console.log(res)
+      })
       },
   },
 
@@ -113,7 +118,7 @@ export default {
 
     //根据iid请求详情数据  
     getDetail(this.iid).then(res=>{
-      console.log(res);
+      // console.log(res);
       //1. 获取顶部的图片轮播数据
       const data = res.data.result;
       this.topImages = data.itemInfo.topImages;
